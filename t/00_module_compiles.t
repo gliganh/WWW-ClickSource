@@ -1,5 +1,5 @@
 use Test::More tests => 2;
 
-use_ok("WWW::ClickSource","Module compiles");
+use_ok("WWW::ClickSource");
 
-ok(WWW::ClickSource->new(foo => 'bar'),"Dummy object created");
+ok(WWW::ClickSource->new({foo => bar}),"Dummy object created");

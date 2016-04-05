@@ -6,7 +6,11 @@ use warnings;
 use URI;
 use WWW::ClickSource::Request;
 
+use base 'Exporter';
+
 our $VERSION = 0.1;
+
+our @EXPORT_OK = ('detect_source');
 
 =head1 NAME
 
@@ -21,10 +25,67 @@ Version 0.1
 Help determine the source of the traffic on your website.
 
 This module tries to do what GoogleAnalytics, Piwik and other monitoring tools do, but it's something you can
-use on the backend of your application.
+use on the backend of your application in real time.
 
 This module can be used together with HTTP::BrowserDetect to get an even deeper understanding of where your 
 traffic is generated from.
+
+=head1 SYNOPSIS
+
+Can be used in one of two ways 
+
+OOP interface :
+
+    use WWW::ClickSource;
+    
+    my $click_source = WWW::ClickSource->new($request);
+
+    my $source = $click_source->source();
+    my $medium = $click_source->medium();
+    my $campaign = $click_source->campaign();
+    my $category = $click_source->category();
+
+or using Export
+
+    use WWW::ClickSource qw/detect_click_source/;
+
+    my %click_info = detect_click_source($request);
+
+The $request argument is one of Catalyst::Request object or a hash ref with the fallowing structure:
+
+    {
+        host => 'mydomain.com',
+        params => {
+            param_1 => 'value_1',
+            ...
+            param_n => 'value_n',
+        },
+        referer => 'http://referer-website.com/some_link.html?param1=value1'
+    }
+
+params contains the query params from the current HTTP request.
+
+=head1 EXAMPLE
+
+Here is an example on how you can use this module, to keep track of where the user came from using your session object
+
+In case we have a new session but the request had another page on your website as a referer (category is 'pageview') we 
+actually want to tag the current page view as being direct traffic. You have to do this yourself because WWW::ClickSource
+doesn't know the status of your session.
+
+    my $click_source = WWW::ClickSource->new($request);
+    
+    if (! $session->click_source ) {
+        if ($click_source->category ne "pageview") {
+            $session->click_source($click_source->to_hash);
+        }
+        else {
+            $session->click_source({category => 'direct'});
+        }
+    }
+    elsif ($click_source->category ne "pageview") {
+        $session->click_source($click_source->to_hash);
+    }
 
 =head1 METHODS
 
@@ -34,22 +95,32 @@ Creates a new WWW::ClickSource object
 
 =cut
 sub new {
-    my ($class,%options) = @_;
+    my ($class,$request,%options) = @_;
     
-    my $self = \%options;
+    my $self = {};
+    
+    if (! $request) {
+        die 'WWW::ClickSource::new() must be called with a $request argument'
+    }
+    
+    $self = detect_click_source($request);
+    
+    if ($options{keep_request}) { 
+        $self->{request} = $request;
+    }
     
     bless $self, $class;
     
     return $self;
 }
 
-=head2 detect_source
+=head2 detect_click_source
 
 Determine where the user came from based on a request object
 
 =cut
-sub detect_source {
-    my ($self,$user_request) = @_;
+sub detect_click_source {
+    my ($user_request) = @_;
     
     my $request = WWW::ClickSource::Request->new($user_request);
     
@@ -105,10 +176,18 @@ sub detect_source {
                 );
             }
             else {
-                %click_info = (
-                    source => $request->{referer}->host,
-                    category => 'referer',
-                );
+                if ($request->{referer}->host eq $request->{host}) {
+                    %click_info = (
+                        source => $request->{host},
+                        category => 'pageview',
+                    );
+                }
+                else {
+                    %click_info = (
+                        source => $request->{referer}->host,
+                        category => 'referer',
+                    );
+                }
             }
         }
         else {
@@ -140,6 +219,88 @@ sub detect_source {
     return \%click_info;
 }
 
+=head2 source
+
+Source of the click picked up from utm_source request param or referer domain name
+
+Only available in OOP mode
+
+=cut
+sub source {
+    return $_[0]{source};
+}
+
+=head2 medium
+
+Medium from which the click originated, usually picked up from utm_medium request param
+
+Only available in OOP mode
+
+=cut
+sub medium {
+    return $_[0]{medium};
+}
+
+=head2 category
+
+Click category, can be one of : direct, paid, referer, pageview
+
+'pageview' means the user came accessed the current page by clicking on a link on another page 
+of the same website. (referer host is the same as your domain name)
+
+Only available in OOP mode
+
+=cut
+sub category {
+    return $_[0]{category};
+}
+
+=head2 campaign
+
+Campaign from which the click originated, usually picked up from utm_campaign request param
+
+Only available in OOP mode
+
+=cut
+sub campaign {
+    return $_[0]{campaign};
+}
+
+
+=head2 to_hash
+
+Return a hash containing all the relevant attributes of the current object 
+
+Only available in OOP mode
+
+=cut
+sub to_hash {
+    my $self = shift;
+    
+    my %info = (
+        source => $self->{source} // '',
+        campaign => $self->{campaign} // '',
+        category => $self->{category} // '',
+        medium => $self->{medium} // ''
+    );
+    
+    return \%info;
+}
+
+=head2 request
+
+Instance of WWW::ClickSource::Request or a subclass of it, representing the internal request object 
+used to extract the info we need
+
+Only available in OOP mode and if you specify that you want access to the request object using keep_request => 1
+
+    my $click_source = WWW::ClickSource->new($request, keep_request => 1);
+
+=cut
+sub request {
+    return $_[0]{request};
+}
+
 1;
 
 =head1 AUTHOR
@@ -152,13 +313,11 @@ Please report any bugs or feature requests to C<bug-www-session at rt.cpan.org>,
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-ClickSource>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
-
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc WWW::ClickSource
-
 
 You can also look for information at:
 

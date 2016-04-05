@@ -13,11 +13,9 @@ my @test_urls = (
     'http://www.google.com/search',
 );
 
-my $click_source = WWW::ClickSource->new();
-
 foreach my $url (@test_urls) {
     
-    my %source = $click_source->detect_source({
+    my %source = WWW::ClickSource::detect_click_source({
         'referer' => $url,
         'params' => {},
         'host' => 'myapp.com'

@@ -5,10 +5,8 @@ use warnings;
 
 use_ok('WWW::ClickSource');
 
-my $click_source = WWW::ClickSource->new();
-
 {
-    my %source = $click_source->detect_source({
+    my %source = WWW::ClickSource::detect_click_source({
         'referer' => 'http://partner-site.com/de-vanzare/garsoniere/Bucuresti/13_Septembrie/Strada_Dorneasca',
         'params' => {
                      'utm_source' => 'partner-site.com',
@@ -28,7 +26,7 @@ my $click_source = WWW::ClickSource->new();
 
 
 {
-    my %source = $click_source->detect_source({
+    my %source = WWW::ClickSource::detect_click_source({
         'referer' => 'https://www.facebook.com/',
         'params' => {
                      'utm_source' => 'partner-site.com',

@@ -5,10 +5,8 @@ use warnings;
 
 use_ok('WWW::ClickSource');
 
-my $click_source = WWW::ClickSource->new();
-
 {
-    my %source = $click_source->detect_source({
+    my %source = WWW::ClickSource::detect_click_source({
         'params' => {
                      'utm_source' => 'facebook.com',
                      'utm_campaign' => 'facebook_projects',
@@ -27,7 +25,7 @@ my $click_source = WWW::ClickSource->new();
 
 
 {
-    my %source = $click_source->detect_source({
+    my %source = WWW::ClickSource::detect_click_source({
         'referer' => 'http://l.facebook.com/l.php?u=http%3A%2F%2Fmysite.com%2Fansambluri-rezidentiale%2Fpolitehnica-park-residence-79.html%3Futm_source%3Dfacebook.com%26utm_medium%3Dfacebook_ads%26utm_campaign%3Dfacebook_projects&h=LAQHbabAgAQG_qlncuEksPga8LnrPeEdi_JOWmmbwK80NDg&enc=AZPLDl2ZtcVN2fPYVWEZ6NabsduLxbPTIKrNyxcD5b6GSSK0PN5ZUEuMgyhXZzS1aMpCkYWvlXgZwfX7VY6N9A-UfEmZ5zGyi27KAIe06nO-IMzlHoHttmztns3MJcD_5j1bn6XLVp0O-2ikcPDYedquOqLfpAfuhEhPa64VMTL9PQ',
         'params' => {
                          'utm_medium' => 'facebook_ads',
