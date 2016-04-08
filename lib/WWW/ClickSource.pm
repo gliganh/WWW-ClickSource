@@ -150,7 +150,7 @@ sub detect_click_source {
                 $click_info{category} = 'other';
             }
         }
-        elsif ( $request->{referer} && $params->{gclid} && $request->{referer}->host =~ /(?:google\.(?:co\.)?\w{2,3}|googleadservices\.com)$/ ) {
+        elsif ( $request->{referer} && $params->{gclid} && $request->{referer}->host =~ /(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {
             
             %click_info = (
                     source => 'google',
@@ -166,7 +166,7 @@ sub detect_click_source {
             
             my $referer_base_url = $request->{referer}->host . $request->{referer}->path;
             
-            if ( $referer_base_url =~ /(?:google\.(?:co\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
+            if ( $referer_base_url =~ /(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
             
                 %click_info = (
                         source => 'google',
@@ -198,7 +198,10 @@ sub detect_click_source {
         }
     }
     
-    if ( $click_info{source} && $click_info{category} eq "referer" && $click_info{source} =~ /(?:www|search\.)?(google|yahoo|bing)\.(?:co\.)?\w{2,3}$/ ) {
+    if ( $click_info{source} && $click_info{category} eq "referer" && ( 
+                $click_info{source} =~ /(?:www|search\.)?(google|yahoo|bing)\.(?:com?\.)?\w{2,3}$/ || 
+                $click_info{source} =~ /webcache\.(google)usercontent\.com/ )
+        ) {
         $click_info{source} = $1;
         $click_info{category} = 'organic';
         $click_info{medium} = 'organic';
