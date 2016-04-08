@@ -8,7 +8,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.2;
+our $VERSION = 0.3;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -140,7 +140,7 @@ sub detect_click_source {
                 }
             }
             
-            if ( $click_info{medium} =~ /cpc|cpm|facebook_ads/ ) {
+            if ( $click_info{medium} =~ m/cpc|cpm|facebook_ads/ ) {
                 $click_info{category} = 'paid';
             }
             elsif ( $request->{referer} ){
@@ -150,7 +150,7 @@ sub detect_click_source {
                 $click_info{category} = 'other';
             }
         }
-        elsif ( $request->{referer} && $params->{gclid} && $request->{referer}->host =~ /(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {
+        elsif ( $request->{referer} && $params->{gclid} && $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {
             
             %click_info = (
                     source => 'google',
@@ -166,7 +166,7 @@ sub detect_click_source {
             
             my $referer_base_url = $request->{referer}->host . $request->{referer}->path;
             
-            if ( $referer_base_url =~ /(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
+            if ( $referer_base_url =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
             
                 %click_info = (
                         source => 'google',
@@ -199,15 +199,15 @@ sub detect_click_source {
     }
     
     if ( $click_info{source} && $click_info{category} eq "referer" && ( 
-                $click_info{source} =~ /(?:www|search\.)?(google|yahoo|bing)\.(?:com?\.)?\w{2,3}$/ || 
-                $click_info{source} =~ /webcache\.(google)usercontent\.com/ )
+                $click_info{source} =~ m/(?:www|search\.)?(google|yahoo|bing)\.(?:com?\.)?\w{2,3}$/ || 
+                $click_info{source} =~ m/webcache\.(google)usercontent\.com/ )
         ) {
         $click_info{source} = $1;
         $click_info{category} = 'organic';
         $click_info{medium} = 'organic';
     }
     
-    if ( $click_info{source} && $click_info{source} =~ /(m|www)\.facebook\.com/ ) {
+    if ( $click_info{source} && $click_info{source} =~ m/(m|www)\.facebook\.com/ ) {
         $click_info{source} = 'facebook.com';
     }
     

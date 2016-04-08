@@ -1,0 +1,4 @@
+v0.3 Improved detection of google organic traffic
+     Attempt to fix test for perl 5.8
+v0.2 Fixed issue with CPAN installs
+v0.1 First release
