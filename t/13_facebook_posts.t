@@ -16,7 +16,7 @@ use_ok('WWW::ClickSource');
           'source' => 'facebook.com',
           'category' => 'referer',
           'campaign' => '',
-          'medium' => '',
+          'medium' => 'social',
         },'Facebook posts, no URL params');      
 }
 

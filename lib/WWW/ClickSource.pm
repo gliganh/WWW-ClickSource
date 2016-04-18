@@ -8,7 +8,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.3;
+our $VERSION = 0.4;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -209,6 +209,12 @@ sub detect_click_source {
     
     if ( $click_info{source} && $click_info{source} =~ m/(m|www)\.facebook\.com/ ) {
         $click_info{source} = 'facebook.com';
+        $click_info{medium} = 'social';
+    }
+    
+    if ( $click_info{source} && $click_info{source} =~ m/l\.facebook\.com/ ) {
+        $click_info{source} = 'facebook.com';
+        $click_info{medium} = 'paid';
     }
     
     #default to empty strings to avoid undefined value warnings in string comparisons
