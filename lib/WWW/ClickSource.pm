@@ -3,6 +3,8 @@ package WWW::ClickSource;
 use strict;
 use warnings;
 
+use 5.010;
+
 use URI;
 use WWW::ClickSource::Request;
 
@@ -143,7 +145,7 @@ sub detect_click_source {
             if ( $click_info{medium} =~ m/cpc|cpm|facebook_ads/ ) {
                 $click_info{category} = 'paid';
             }
-            elsif ( $request->{referer} ){
+            elsif ( $request->{referer} ) {
                 $click_info{category} = 'referer';
             }
             else {
