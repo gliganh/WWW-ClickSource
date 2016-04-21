@@ -198,10 +198,19 @@ sub detect_click_source {
                 category => 'direct',
             );
         }
+        
+        if ( $click_info{source} && $click_info{source} =~ m/l\.facebook\.com/ ) {
+            $click_info{source} = 'facebook';
+            $click_info{medium} = 'paid';
+        }
+        elsif ( $click_info{source} && $click_info{source} =~ m/(?:(?:m|www)\.)?(facebook|twitter|linkedin|plus\.google)\.(?:com?\.)?\w{2,3}/ ) {
+            $click_info{source} = $1;
+            $click_info{medium} = 'social';
+        }
     }
     
     if ( $click_info{source} && $click_info{category} eq "referer" && ( 
-                $click_info{source} =~ m/(?:www|search\.)?(google|yahoo|bing)\.(?:com?\.)?\w{2,3}$/ || 
+                $click_info{source} =~ m/(?:www|search\.)?(google|yahoo|bing|yandex|baidu|aol|ask|duckduckgo)\.(?:com?\.)?\w{2,3}$/ || 
                 $click_info{source} =~ m/webcache\.(google)usercontent\.com/ )
         ) {
         $click_info{source} = $1;
@@ -209,15 +218,6 @@ sub detect_click_source {
         $click_info{medium} = 'organic';
     }
     
-    if ( $click_info{source} && $click_info{source} =~ m/(m|www)\.facebook\.com/ ) {
-        $click_info{source} = 'facebook.com';
-        $click_info{medium} = 'social';
-    }
-    
-    if ( $click_info{source} && $click_info{source} =~ m/l\.facebook\.com/ ) {
-        $click_info{source} = 'facebook.com';
-        $click_info{medium} = 'paid';
-    }
     
     #default to empty strings to avoid undefined value warnings in string comparisons
     $click_info{source} //= '';

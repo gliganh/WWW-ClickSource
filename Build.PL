@@ -19,7 +19,7 @@ my $mb = Module::Build->new(
       dist_abstract   => 'Determine the source of a visit on your website : organic, adwords, facebook, referer site',
       meta_merge     => {
           resources => {
-              repository  => 'https://github.com/gliganh/www-clicksource',
+              repository  => 'https://github.com/gliganh/WWW-ClickSource',
           }
       },
 );
