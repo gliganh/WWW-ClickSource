@@ -20,7 +20,7 @@ WWW::ClickSource - Determine the source of a visit on your website : organic, ad
 
 =head1 VERSION
 
-Version 0.1
+Version 0.5
 
 =head1 DESCRIPTION
 
@@ -29,7 +29,7 @@ Help determine the source of the traffic on your website.
 This module tries to do what GoogleAnalytics, Piwik and other monitoring tools do, but it's something you can
 use on the backend of your application in real time.
 
-This module can be used together with HTTP::BrowserDetect to get an even deeper understanding of where your 
+This module can be used together with L<HTTP::BrowserDetect> to get an even deeper understanding of where your 
 traffic is generated from.
 
 =head1 SYNOPSIS
@@ -53,7 +53,7 @@ or using Export
 
     my %click_info = detect_click_source($request);
 
-The $request argument is one of Catalyst::Request object or a hash ref with the fallowing structure:
+The C<$request> argument is one of L<Catalyst::Request> object or a hash ref with the fallowing structure:
 
     {
         host => 'mydomain.com',
@@ -72,7 +72,7 @@ params contains the query params from the current HTTP request.
 Here is an example on how you can use this module, to keep track of where the user came from using your session object
 
 In case we have a new session but the request had another page on your website as a referer (category is 'pageview') we 
-actually want to tag the current page view as being direct traffic. You have to do this yourself because WWW::ClickSource
+actually want to tag the current page view as being direct traffic. You have to do this yourself because C<WWW::ClickSource>
 doesn't know the status of your session.
 
     my $click_source = WWW::ClickSource->new($request);
@@ -93,7 +93,7 @@ doesn't know the status of your session.
 
 =head2 new
 
-Creates a new WWW::ClickSource object
+Creates a new C<WWW::ClickSource> object
 
 =cut
 sub new {
@@ -232,7 +232,7 @@ sub detect_click_source {
 
 =head2 source
 
-Source of the click picked up from utm_source request param or referer domain name
+Source of the click picked up from C<utm_source> request param or referer domain name
 
 Only available in OOP mode
 
@@ -243,7 +243,7 @@ sub source {
 
 =head2 medium
 
-Medium from which the click originated, usually picked up from utm_medium request param
+Medium from which the click originated, usually picked up from C<utm_medium> request param
 
 Only available in OOP mode
 
@@ -268,7 +268,7 @@ sub category {
 
 =head2 campaign
 
-Campaign from which the click originated, usually picked up from utm_campaign request param
+Campaign from which the click originated, usually picked up from C<utm_campaign> request param
 
 Only available in OOP mode
 
@@ -300,7 +300,7 @@ sub to_hash {
 
 =head2 request
 
-Instance of WWW::ClickSource::Request or a subclass of it, representing the internal request object 
+Instance of L<WWW::ClickSource::Request> or a subclass of it, representing the internal request object 
 used to extract the info we need
 
 Only available in OOP mode and if you specify that you want access to the request object using keep_request => 1
@@ -317,6 +317,10 @@ sub request {
 =head1 AUTHOR
 
 Gligan Calin Horea, C<< <gliganh at gmail.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/gliganh/WWW-ClickSource>
 
 =head1 BUGS
 
@@ -351,10 +355,6 @@ L<http://cpanratings.perl.org/d/WWW-ClickSource>
 L<http://search.cpan.org/dist/WWW-ClickSource/>
 
 =back
-
-
-=head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 

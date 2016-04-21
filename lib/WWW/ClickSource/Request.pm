@@ -15,7 +15,7 @@ Simple object that contains the data we need in order to dectect where the user 
 
 =head2 new
 
-Creates a new WWW::ClickSource::Request object
+Creates a new C<WWW::ClickSource::Request> object
 
 =cut
 sub new {
@@ -44,6 +44,10 @@ sub new {
 
 Gligan Calin Horea, C<< <gliganh at gmail.com> >>
 
+=head1 REPOSITORY
+
+L<https://github.com/gliganh/WWW-ClickSource>
+
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-www-session at rt.cpan.org>, or through
@@ -55,7 +59,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc WWW::ClickSource
+    perldoc WWW::ClickSource::Request
 
 
 You can also look for information at:
@@ -76,13 +80,9 @@ L<http://cpanratings.perl.org/d/WWW-ClickSource>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/WWW-ClickSource/>
+L<http://search.cpan.org/dist/WWW-ClickSource>
 
 =back
-
-
-=head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
