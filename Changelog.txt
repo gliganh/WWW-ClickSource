@@ -1,3 +1,7 @@
+v0.7 Handle android-app:// referals
+     Don't crash on unknown scheme
+v0.6 Fixed dependency on perl 5.10
+     POD fixes
 v0.5 More known sources for organic and social traffic
      Dependency on perl >= 5.10
 v0.4 Improved traffic detection for social sources

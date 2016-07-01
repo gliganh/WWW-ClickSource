@@ -9,12 +9,12 @@ my $mb = Module::Build->new(
       requires        => {
 	      'Module::Build' => 0.38,
           'URI'       => 0,
-          'perl'      => '5.10',
+          'perl'      => '5.010000',
       },
       build_requires => {
           'Test::More' => 0,
           'URI'        => 0,
-          'perl'      => '5.10',
+          'perl'      => '5.010000',
       },
       dist_abstract   => 'Determine the source of a visit on your website : organic, adwords, facebook, referer site',
       meta_merge     => {
