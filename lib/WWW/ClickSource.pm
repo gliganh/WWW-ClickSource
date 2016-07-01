@@ -10,7 +10,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.5;
+our $VERSION = 0.6;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -20,7 +20,7 @@ WWW::ClickSource - Determine the source of a visit on your website : organic, ad
 
 =head1 VERSION
 
-Version 0.5
+Version 0.6
 
 =head1 DESCRIPTION
 
@@ -138,7 +138,13 @@ sub detect_click_source {
             
             if (! $click_info{source} ) {
                 if ( $request->{referer} ) {
-                    $click_info{source} = $request->{referer}->host;
+                    if ($request->{referer}->scheme =~ /https?/) {
+                        $click_info{source} = $request->{referer}->host;
+                    }
+                    elsif ($request->{referer}->scheme eq 'android-app') {
+                        $click_info{source} = 'android-app',
+                        $click_info{app} = $request->{referer}->path,
+                    }
                 }
             }
             
@@ -152,45 +158,82 @@ sub detect_click_source {
                 $click_info{category} = 'other';
             }
         }
-        elsif ( $request->{referer} && $params->{gclid} && $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {
-            
-            %click_info = (
-                    source => 'google',
-                    campaign =>  '',
-                    medium => 'cpc',
-                    category => 'paid',
-            );
+        elsif ( $request->{referer} && $params->{gclid} ) { #gclid is a google adwords specific paramter
+            if  ( $request->{referer}->scheme =~ /https?/ ) {
+                if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {            
+                    %click_info = (
+                            source => 'google',
+                            campaign =>  '',
+                            medium => 'cpc',
+                            category => 'paid',
+                    );
+                }
+            } elsif ( $request->{referer}->scheme eq 'android-app' ) {
+                    %click_info = (
+                            source => 'android-app',
+                            app => $request->{referer}->authority,
+                            campaign =>  '',
+                            medium => 'cpc',
+                            category => 'paid',
+                    );
+            }
+            else {
+                    %click_info = (
+                            source => $request->{referer} ."", #stringify
+                            campaign =>  '',
+                            medium => 'cpc',
+                            category => 'paid',
+                    );
+            }
         }
     }
     
     if (! $click_info{medium} ) {
         if ( $request->{referer} ) {
             
-            my $referer_base_url = $request->{referer}->host . $request->{referer}->path;
+            if ( $request->{referer}->scheme =~ /https?/ ) {
             
-            if ( $referer_base_url =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
+                my $referer_base_url = $request->{referer}->host . $request->{referer}->path;
             
-                %click_info = (
-                        source => 'google',
-                        campaign =>  '',
-                        medium => 'cpc',
-                        category => 'paid',
-                );
-            }
-            else {
-                if ($request->{referer}->host eq $request->{host}) {
+                if ( $referer_base_url =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
+            
                     %click_info = (
-                        source => $request->{host},
-                        category => 'pageview',
+                            source => 'google',
+                            campaign =>  '',
+                            medium => 'cpc',
+                            category => 'paid',
                     );
                 }
                 else {
-                    %click_info = (
-                        source => $request->{referer}->host,
-                        category => 'referer',
-                    );
+                    if ( $request->{referer}->host eq $request->{host} ) {
+                        %click_info = (
+                            source => $request->{host},
+                            category => 'pageview',
+                        );
+                    }
+                    else {
+                        %click_info = (
+                            source => $request->{referer}->host,
+                            category => 'referer',
+                        );
+                    }
                 }
+            } 
+            elsif ( $request->{referer}->scheme eq 'android-app' ) {
+                %click_info = (
+                    source => 'android-app',
+                    app => $request->{referer}->authority,
+                    category => 'referer',
+                );  
             }
+            else {
+                %click_info = (
+                    source => $request->{referer} ."", #stringify
+                    category => 'referer',
+                );
+            }
+                
+            
         }
         else {
             %click_info = (
