@@ -10,7 +10,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.7;
+our $VERSION = 0.8;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -158,32 +158,42 @@ sub detect_click_source {
                 $click_info{category} = 'other';
             }
         }
-        elsif ( $request->{referer} && $params->{gclid} ) { #gclid is a google adwords specific paramter
-            if  ( $request->{referer}->scheme =~ /https?/ ) {
-                if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {            
-                    %click_info = (
-                            source => 'google',
-                            campaign =>  '',
-                            medium => 'cpc',
-                            category => 'paid',
-                    );
+        elsif ( $params->{gclid} ) { #gclid is a google adwords specific parameter
+            if ( $request->{referer} ) {
+                if  ( $request->{referer}->scheme =~ /https?/ ) {
+                    if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {            
+                        %click_info = (
+                                source => 'google',
+                                campaign =>  '',
+                                medium => 'cpc',
+                                category => 'paid',
+                        );
+                    }
+                } elsif ( $request->{referer}->scheme eq 'android-app' ) {
+                        %click_info = (
+                                source => 'android-app',
+                                app => $request->{referer}->authority,
+                                campaign =>  '',
+                                medium => 'cpc',
+                                category => 'paid',
+                        );
                 }
-            } elsif ( $request->{referer}->scheme eq 'android-app' ) {
-                    %click_info = (
-                            source => 'android-app',
-                            app => $request->{referer}->authority,
-                            campaign =>  '',
-                            medium => 'cpc',
-                            category => 'paid',
-                    );
+                else {
+                        %click_info = (
+                                source => $request->{referer} ."", #stringify
+                                campaign =>  '',
+                                medium => 'cpc',
+                                category => 'paid',
+                        );
+                }
             }
-            else {
-                    %click_info = (
-                            source => $request->{referer} ."", #stringify
-                            campaign =>  '',
-                            medium => 'cpc',
-                            category => 'paid',
-                    );
+            else { #gclid param without referer - just use defaults for google, since we don't know anything else
+                %click_info = (
+                        source => 'google',
+                        campaign =>  '',
+                        medium => 'cpc',
+                        category => 'paid',
+                );
             }
         }
     }

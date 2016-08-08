@@ -71,4 +71,22 @@ use_ok('WWW::ClickSource');
 }
 
 
+{
+    my %source = WWW::ClickSource::detect_click_source({
+        'params' => {
+                     'gclid' => 'CLXBtbKQ8MsCFUa4GwodTYIP2g'
+                    },
+        'host' => 'myapp.com'
+    });
+    
+    is_deeply(\%source, { 
+                        medium => 'cpc', 
+                        source => 'google', 
+                        category => 'paid',
+                        campaign => '',
+     },'CPC Google adwords - missing refrerer');
+}
+
+
+
 done_testing();
