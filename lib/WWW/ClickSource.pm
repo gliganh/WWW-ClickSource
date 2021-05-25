@@ -10,7 +10,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.8;
+our $VERSION = 0.10;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -20,7 +20,7 @@ WWW::ClickSource - Determine the source of a visit on your website : organic, ad
 
 =head1 VERSION
 
-Version 0.6
+Version 0.10
 
 =head1 DESCRIPTION
 
@@ -164,36 +164,38 @@ sub detect_click_source {
                 if  ( $request->{referer}->scheme =~ /https?/ ) {
                     if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {            
                         %click_info = (
+                                %click_info,
                                 source => 'google',
                                 medium => 'cpc',
                                 category => 'paid',
-                                %click_info, # utm_* params take precedence over our guess
                         );
                     }
                 } elsif ( $request->{referer}->scheme eq 'android-app' ) {
                         %click_info = (
+                                %click_info,
                                 source => 'android-app',
                                 app => $request->{referer}->authority,
                                 medium => 'cpc',
                                 category => 'paid',
-                                %click_info, # utm_* params take precedence over our guess
+                                
                         );
                 }
                 else {
                         %click_info = (
+                                %click_info, # utm_* params take precedence over our guess
                                 source => $request->{referer} ."", #stringify
                                 medium => 'cpc',
                                 category => 'paid',
-                                %click_info, # utm_* params take precedence over our guess
                         );
                 }
             }
             else { #gclid param without referer - just use defaults for google, since we don't know anything else
                 %click_info = (
+                        %click_info,
                         source => 'google',
                         medium => 'cpc',
                         category => 'paid',
-                        %click_info, # utm_* params take precedence over our guess
+                        
                 );
             }
         }
@@ -209,7 +211,7 @@ sub detect_click_source {
                 if ( $referer_base_url =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com).*?\/aclk/ ) {
             
                     %click_info = (
-                            %click_info, # utm_* are less important
+                            %click_info,
                             source => 'google',
                             medium => 'cpc',
                             category => 'paid',
@@ -218,14 +220,14 @@ sub detect_click_source {
                 else {
                     if ( $request->{referer}->host eq $request->{host} ) {
                         %click_info = (
-                            %click_info, # utm_* are less important
+                            %click_info,
                             source => $request->{host},
                             category => 'pageview',
                         );
                     }
                     else {
                         %click_info = (
-                            %click_info, # utm_* are less important
+                            %click_info,
                             source => $request->{referer}->host,
                             category => 'referer',
                         );
@@ -234,7 +236,7 @@ sub detect_click_source {
             } 
             elsif ( $request->{referer}->scheme eq 'android-app' ) {
                 %click_info = (
-                    %click_info, # utm_* are less important
+                    %click_info,
                     source => 'android-app',
                     app => $request->{referer}->authority,
                     category => 'referer',
@@ -242,7 +244,7 @@ sub detect_click_source {
             }
             else {
                 %click_info = (
-                    %click_info, # utm_* are less important
+                    %click_info,
                     source => $request->{referer} ."", #stringify
                     category => 'referer',
                 );
