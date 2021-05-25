@@ -10,7 +10,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = 0.10;
+our $VERSION = '0.10';
 
 our @EXPORT_OK = ('detect_source');
 
