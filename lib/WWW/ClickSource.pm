@@ -10,7 +10,7 @@ use WWW::ClickSource::Request;
 
 use base 'Exporter';
 
-our $VERSION = '0.10';
+our $VERSION = 1.0002;
 
 our @EXPORT_OK = ('detect_source');
 
@@ -20,7 +20,7 @@ WWW::ClickSource - Determine the source of a visit on your website : organic, ad
 
 =head1 VERSION
 
-Version 0.10
+Version 1.0002
 
 =head1 DESCRIPTION
 
@@ -162,7 +162,7 @@ sub detect_click_source {
         if ( $params->{gclid} ) { #gclid is a google adwords specific parameter
             if ( $request->{referer} ) {
                 if  ( $request->{referer}->scheme =~ /https?/ ) {
-                    if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com)$/ ) {            
+                    if ( $request->{referer}->host =~ m/(?:google\.(?:com?\.)?\w{2,3}|googleadservices\.com|googleads\.\w+\.doubleclick\.net)$/ ) {
                         %click_info = (
                                 %click_info,
                                 source => 'google',
